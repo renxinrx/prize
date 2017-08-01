@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>抽奖程序--鼠标点击事件和键盘事件</title>
+	<style>
+		#wrap{
+			width:200px;
+			height:300px;
+			margin:100px auto;
+			text-align:center;
+		}
+		#wrap .showInfo{
+			width:100%;
+			height:30px;
+			line-height: 30px;
+			border:1px solid #ccc;
+			margin-bottom: 10px;
+		}
+		#wrap .btns{
+			width:100%;
+		}
+		.btns span{
+			display: inline-block;
+			width:80px;
+			height:30px;
+			margin-left: 10px;
+			line-height:30px;
+			background: #036;
+			color:#fff;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+
+	</style>
+</head>
+<body>
+
+	<div id="wrap">
+		<div class="showInfo"></div> 
+		<div class="btns">
+			<span class="start">开始</span>
+			<span class="stop">停止</span>
+		</div>
+	</div>
+
+
+	<script>
+	// 思路：定义一个数组存放抽奖的信息，点击开始的时候，打开一个定时器，循环数组中的内容。根据random获取相应的值，显示在showinfo里面。点击停止，清除定时器
+	window.onload=function(){
+		// 封装一个根据类名来获取对象的函数 parent父级元素的id
+		function getElementsByClass(className,parent){
+			var parent;
+			if(parent){
+				parent = document.getElementById(parent);
+			}else{
+				parent = document;
+			}
+			console.log(parent);
+			var arr=[],//存放对应的元素对象
+				list = parent.getElementsByTagName('*'),//获取parent下的所有子元素的对象
+				len=list.length,
+				i;
+			for(i=0;i<len;i++){
+				if(list[i].className==className){
+					arr.push(list[i]);
+				}
+			}
+
+			return arr;
+		}
+
+
+		//奖品内容
+		var arr=['电脑','山地车','大彩电','电冰箱','洗衣机','电风扇','电视机','小米手机','苹果手机','手机'];
+		var i,
+			len=arr.length,
+			timer=null,//定时器
+			flag=false;//是否已经按下‘回车键’，绑定键盘事件用
+
+		var start=getElementsByClass('start','wrap')[0],
+		    stop=getElementsByClass('stop','wrap')[0],
+		    showInfo=getElementsByClass('showInfo','wrap')[0];
+		 // 鼠标事件
+		start.onclick = startPlay;
+		stop.onclick = stopPlay;
+
+		// 键盘事件 onkeyup
+		document.onkeyup=function(e){
+			var code =e.keyCode;
+			// 回车键的键码是13
+			if(code==13){
+				if(!flag){
+					startPlay();
+					flag=true;
+				}else{
+					stopPlay();
+					flag=false;
+				}
+				
+			}
+		}
+
+
+		// 开始抽奖
+		function startPlay(){
+			clearInterval(timer);//每次开始前清除之前的定时器
+			// 设置定时器 生成随机数，并插入到显示区
+			timer = setInterval(function(){
+				var random = Math.floor(Math.random()*len);//获取随机值
+				
+				showInfo.innerHTML = arr[random];
+			},100)
+
+			
+			start.style.background='#ccc';//开始按钮变为灰色 不可点击状态
+		}
+
+		// 结束抽奖
+		function stopPlay(){
+			//清除定时器
+			clearInterval(timer);
+			start.style.background='#036';//开始按钮恢复成原来颜色
+		}
+
+	}
+
+	</script>
+</body>
+</html>
